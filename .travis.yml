@@ -1,11 +1,20 @@
+sudo: required
+
 language: scala
 
 scala:
   - 2.11.12
 
+services:
+  - docker
+
 stages:
   - test
   - deploy
 
-script:
-  - sbt clean test
+jobs:
+  include:
+    - stage: test 
+      script: sbt clean test
+    - stage: deploy
+      script: sbt docker:publishLocal

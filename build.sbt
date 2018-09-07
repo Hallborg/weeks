@@ -1,6 +1,6 @@
 name := "weeks"
 
-version := "0.1"
+version := "0.1-SNAPSHOT"
 
 scalaVersion := "2.11.12"
 
@@ -15,3 +15,14 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2-core" % "4.2.0" % Test,
   "com.typesafe.akka" %% "akka-http-testkit" % "10.1.3" % Test
 )
+
+
+dockerBaseImage := "armhf/openjdk:8-jre-alpine"
+//dockerRepository := Some("registry.gitlab.com/laban")
+
+enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
+enablePlugins(AshScriptPlugin)
+
+mainClass in Compile := Some("hallborg.weeks.Main")
+
