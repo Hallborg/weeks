@@ -1,0 +1,11 @@
+language: scala
+
+scala:
+  - 2.11.12
+
+stages:
+  - test
+  - deploy
+
+script:
+  - sbt clean test
