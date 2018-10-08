@@ -10,11 +10,14 @@ services:
 
 stages:
   - test
-  - deploy
+  - name: deploy
+    if: branch = master
 
 jobs:
   include:
     - stage: test 
       script: sbt clean test
     - stage: deploy
-      script: sbt docker:publishLocal
+      script:
+      - echo "$DOCKER_PW" | docker login -u "$DOCKER_USER" --password-stdin
+      - sbt docker:publish

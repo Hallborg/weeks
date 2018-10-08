@@ -1,6 +1,6 @@
 name := "weeks"
 
-version := "0.1-SNAPSHOT"
+version := "0.1.0"
 
 scalaVersion := "2.11.12"
 
@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
 
 
 dockerBaseImage := "armhf/openjdk:8-jre-alpine"
-//dockerRepository := Some("registry.gitlab.com/laban")
+dockerRepository := Some("laban")
 
 enablePlugins(JavaAppPackaging)
 enablePlugins(DockerPlugin)
