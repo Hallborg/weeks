@@ -10,11 +10,15 @@ class WeeksRoute extends JsonMarshallingSupport {
   val route: Route =
     get {
       path("week") {
+        parameters('from, 'to) { (from, to) =>
+          complete(logic.getWeeksFromDateStrings(from, to))
+        }
+      } ~ path("week" / RemainingPath) { date =>
+        complete(logic.getWeekFromDateString(date.toString()))
+      } ~ path("week") {
         complete(logic.currentWeek)
+      } ~ path("unicorn") {
+        complete(Unicorn.render)
       }
-    } ~ path("week" / RemainingPath) { date =>
-      complete(logic.getWeekFromDateString(date.toString()))
-    } ~ path("unicorn") {
-      complete(Unicorn.render)
     }
 }

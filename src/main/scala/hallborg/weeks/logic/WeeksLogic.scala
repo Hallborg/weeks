@@ -5,11 +5,13 @@ import java.time.format.DateTimeParseException
 import java.time.temporal.WeekFields
 
 import hallborg.weeks.entities.Week
-import hallborg.weeks.exceptions.BadFormatException
+import hallborg.weeks.exceptions.{BadFormatException, BadOrderException}
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class WeeksLogic {
+
+  def currentWeek: Week = calculateWeek(LocalDate.now)
 
   def getWeekFromDateString(date: String): Week = {
     val localDate = tryParseDate(date)
@@ -17,13 +19,12 @@ class WeeksLogic {
   }
 
   private def tryParseDate(date: String) = {
-    Try(LocalDate.parse(date)).recover {
-      case _: DateTimeParseException =>
+    Try(LocalDate.parse(date)) match {
+      case Success(parsedDate) => parsedDate
+      case Failure(_: DateTimeParseException) =>
         throw BadFormatException(s"Wrong format on date: $date")
-    }.get
+    }
   }
-
-  def currentWeek: Week = calculateWeek(LocalDate.now)
 
   def getWeekFromDate(date: LocalDate): Week = calculateWeek(date)
 
@@ -33,4 +34,14 @@ class WeeksLogic {
   private def getWeeksFields =
     WeekFields.ISO.weekOfWeekBasedYear()
 
+  def getWeeksFromDateStrings(from: String, to: String): Set[Week] = {
+    val fromDate = tryParseDate(from)
+    val toDate = tryParseDate(to)
+    validateCronicalOrder(fromDate, toDate)
+    Set(getWeekFromDate(fromDate), getWeekFromDate(toDate))
+  }
+
+  private def validateCronicalOrder(from: LocalDate, to: LocalDate): Unit = {
+    if(from.isAfter(to)) throw BadOrderException("'from' must be before 'to'")
+  }
 }

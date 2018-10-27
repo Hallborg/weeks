@@ -5,12 +5,7 @@ import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.ExceptionHandler
 import akka.http.scaladsl.server.Directives.complete
 import akka.http.scaladsl.server.RejectionHandler
-import hallborg.weeks.exceptions.{
-  BadFormatException,
-  ErrorResponse,
-  NotFoundException,
-  WeeksException
-}
+import hallborg.weeks.exceptions._
 import hallborg.weeks.routes.JsonMarshallingSupport
 
 object Handlers extends JsonMarshallingSupport {
@@ -24,6 +19,8 @@ object Handlers extends JsonMarshallingSupport {
   implicit def exceptionHandler: ExceptionHandler =
     ExceptionHandler {
       case e: BadFormatException =>
+        complete(StatusCodes.BadRequest, createErrorResponse(e))
+      case e: BadOrderException =>
         complete(StatusCodes.BadRequest, createErrorResponse(e))
     }
 

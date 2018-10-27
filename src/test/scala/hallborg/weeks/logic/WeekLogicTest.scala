@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.temporal.WeekFields
 
 import hallborg.weeks.entities.Week
-import hallborg.weeks.exceptions.BadFormatException
+import hallborg.weeks.exceptions.{BadFormatException, BadOrderException}
 import hallborg.weeks.mocks.MockDate
 import org.specs2.mutable._
 
@@ -44,31 +44,53 @@ final class WeekLogicTest extends Specification {
       val weekField = WeekFields.ISO.weekOfWeekBasedYear()
       currentDate.get(weekField) must_== weeksLogic.currentWeek.`week-number`
     }
+  }
 
-    "Calculating the week" should {
-      "work amazing" >> {
-        "from dates" in {
-          val dateInWeek32 = LocalDate.of(2018, 8, 7)
-          weeksLogic.getWeekFromDate(dateInWeek32) shouldEqual Week(32)
-        }
-        "from strings" in {
-          val mockDate = MockDate(date = "2018-08-20", weekNumber = 34)
-          val week = weeksLogic.getWeekFromDateString(date = mockDate.date)
-          week.`week-number` shouldEqual mockDate.weekNumber
-        }
+  "Calculating the week" should {
+    "work amazing" >> {
+      "from dates" in {
+        val dateInWeek32 = LocalDate.of(2018, 8, 7)
+        weeksLogic.getWeekFromDate(dateInWeek32) shouldEqual Week(32)
       }
-      "fail brutally" >> {
-        "for strings that can't be parsed to a date" in {
-          val randomString = "noSo-random.String"
-          val badFormatDate = "2018-13-13"
-
-          weeksLogic.getWeekFromDateString(randomString) must throwA[
-            BadFormatException]
-
-          weeksLogic.getWeekFromDateString(badFormatDate) must throwA[
-            BadFormatException]
-        }
+      "from strings" in {
+        val mockDate = MockDate(date = "2018-08-20", weekNumber = 34)
+        val week = weeksLogic.getWeekFromDateString(date = mockDate.date)
+        week.`week-number` shouldEqual mockDate.weekNumber
       }
+    }
+    "fail brutally" >> {
+      "for strings that can't be parsed to a date" in {
+        val randomString = "noSo-random.String"
+        val badFormatDate = "2018-13-13"
+
+        weeksLogic.getWeekFromDateString(randomString) must throwA[
+          BadFormatException]
+
+        weeksLogic.getWeekFromDateString(badFormatDate) must throwA[
+          BadFormatException]
+      }
+    }
+
+  }
+  "Calculating a week range from dates" should {
+    "be possible from two valid dates" in {
+      val saturday = MockDate(date = "2018-10-27", weekNumber = 43)
+      val sunday = MockDate(date = "2018-10-28", weekNumber = 43)
+
+      val weeks = weeksLogic.getWeeksFromDateStrings(
+        from = saturday.date,
+        to = sunday.date)
+
+      weeks shouldEqual Set(Week(43))
+    }
+    "fail with a bad request if 'from > to'" in {
+      val saturday = MockDate(date = "2018-10-27", weekNumber = 43)
+      val sunday = MockDate(date = "2018-10-28", weekNumber = 43)
+
+      weeksLogic.getWeeksFromDateStrings(
+        from = sunday.date,
+        to = saturday.date) must throwA[BadOrderException]
+
 
     }
   }

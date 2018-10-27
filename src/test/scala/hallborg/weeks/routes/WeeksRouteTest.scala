@@ -54,6 +54,30 @@ final class WeeksRouteTest
     }
 
   }
+  "Asking for the week(s) between two dates" should {
+    "return one week number if dates are in the same week" in  {
+
+      Get("/week?from=2018-10-27&to=2018-10-28") ~> weeksRoute ~> check {
+        status shouldEqual StatusCodes.OK
+        val week = responseAs[Set[Week]]
+        week.size shouldEqual 1
+      }
+    }
+    "return two week numbers if the dates are not in the same week" in {
+      Get("/week?from=2018-10-27&to=2018-11-28") ~> weeksRoute ~> check {
+        status shouldEqual StatusCodes.OK
+        val week = responseAs[Set[Week]]
+        week.size shouldEqual 2
+      }
+    }
+    "return a json error object if from > to" in {
+      Get("/week?from=2018-12-27&to=2018-11-28") ~> weeksRoute ~> check {
+        status shouldEqual StatusCodes.BadRequest
+        val week = responseAs[ErrorResponse]
+        week.detail must contain("must be before")
+      }
+    }
+  }
 
   "Querying a path that does not exists" should {
     "return a json error object" in {
