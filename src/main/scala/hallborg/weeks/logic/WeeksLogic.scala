@@ -23,6 +23,8 @@ class WeeksLogic {
       case Success(parsedDate) => parsedDate
       case Failure(_: DateTimeParseException) =>
         throw BadFormatException(s"Wrong format on date: $date")
+      case Failure(e) =>
+        throw e
     }
   }
 
