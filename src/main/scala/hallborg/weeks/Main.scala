@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler}
 import akka.stream.ActorMaterializer
 import com.typesafe.scalalogging.LazyLogging
-import hallborg.weeks.routes.TopRoute
+import hallborg.weeks.routes.{Handlers, TopRoute}
 
 object Main extends LazyLogging {
   def main(args: Array[String]) {

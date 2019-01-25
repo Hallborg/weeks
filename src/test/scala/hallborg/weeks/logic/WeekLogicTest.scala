@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.temporal.WeekFields
 
 import hallborg.weeks.entities.Week
-import hallborg.weeks.exceptions.{BadFormatException, BadOrderException}
+import hallborg.weeks.exceptions.BadFormatException
 import hallborg.weeks.mocks.MockDate
 import org.specs2.mutable._
 
@@ -71,27 +71,5 @@ final class WeekLogicTest extends Specification {
       }
     }
 
-  }
-  "Calculating a week range from dates" should {
-    "be possible from two valid dates" in {
-      val saturday = MockDate(date = "2018-10-27", weekNumber = 43)
-      val sunday = MockDate(date = "2018-10-28", weekNumber = 43)
-
-      val weeks = weeksLogic.getWeeksFromDateStrings(
-        from = saturday.date,
-        to = sunday.date)
-
-      weeks shouldEqual Set(Week(43))
-    }
-    "fail with a bad request if 'from > to'" in {
-      val saturday = MockDate(date = "2018-10-27", weekNumber = 43)
-      val sunday = MockDate(date = "2018-10-28", weekNumber = 43)
-
-      weeksLogic.getWeeksFromDateStrings(
-        from = sunday.date,
-        to = saturday.date) must throwA[BadOrderException]
-
-
-    }
   }
 }

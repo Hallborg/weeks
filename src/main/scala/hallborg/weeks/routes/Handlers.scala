@@ -1,15 +1,13 @@
-package hallborg.weeks
+package hallborg.weeks.routes
 
+import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
-import akka.http.scaladsl.server.ExceptionHandler
 import akka.http.scaladsl.server.Directives.complete
-import akka.http.scaladsl.server.RejectionHandler
+import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler}
 import hallborg.weeks.exceptions._
-import hallborg.weeks.routes.JsonMarshallingSupport
 
 object Handlers extends JsonMarshallingSupport {
-  implicit def rejectionHandle =
+  implicit def rejectionHandle: RejectionHandler =
     RejectionHandler.newBuilder
       .handleNotFound(
         complete(NotFound,
@@ -19,8 +17,6 @@ object Handlers extends JsonMarshallingSupport {
   implicit def exceptionHandler: ExceptionHandler =
     ExceptionHandler {
       case e: BadFormatException =>
-        complete(StatusCodes.BadRequest, createErrorResponse(e))
-      case e: BadOrderException =>
         complete(StatusCodes.BadRequest, createErrorResponse(e))
     }
 

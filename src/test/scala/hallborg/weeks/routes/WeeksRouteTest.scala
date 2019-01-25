@@ -1,9 +1,8 @@
 package hallborg.weeks.routes
 
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler, Route}
 import akka.http.scaladsl.testkit.Specs2RouteTest
-import hallborg.weeks.Handlers
 import hallborg.weeks.entities.Week
 import hallborg.weeks.exceptions.ErrorResponse
 import hallborg.weeks.logic.WeeksLogic
@@ -11,12 +10,13 @@ import hallborg.weeks.mocks.MockDate
 import org.specs2.mutable._
 
 final class WeeksRouteTest
-    extends Specification
+  extends Specification
     with Specs2RouteTest
     with JsonMarshallingSupport {
 
-  implicit def rejectionHandle = Handlers.rejectionHandle
-  implicit def exceptionHandle = Handlers.exceptionHandler
+  implicit def rejectionHandle: RejectionHandler = Handlers.rejectionHandle
+
+  implicit def exceptionHandle: ExceptionHandler = Handlers.exceptionHandler
 
   private val weeksRoute = Route.seal(new WeeksRoute().route)
   private val weeksLogic = new WeeksLogic()
@@ -54,27 +54,27 @@ final class WeeksRouteTest
     }
 
   }
-  "Asking for the week(s) between two dates" should {
-    "return one week number if dates are in the same week" in  {
+  "Asking for the week(s) between dates" should {
+    "return one week number if two dates are in the same week" in {
 
-      Get("/week?from=2018-10-27&to=2018-10-28") ~> weeksRoute ~> check {
+      Get("/week?dates=2018-10-27,2018-10-28") ~> weeksRoute ~> check {
         status shouldEqual StatusCodes.OK
         val week = responseAs[Set[Week]]
         week.size shouldEqual 1
       }
     }
-    "return two week numbers if the dates are not in the same week" in {
-      Get("/week?from=2018-10-27&to=2018-11-28") ~> weeksRoute ~> check {
+    "return two week numbers if two dates are not in the same week" in {
+      Get("/week?dates=2018-10-27,2018-11-28") ~> weeksRoute ~> check {
         status shouldEqual StatusCodes.OK
         val week = responseAs[Set[Week]]
         week.size shouldEqual 2
       }
     }
-    "return a json error object if from > to" in {
-      Get("/week?from=2018-12-27&to=2018-11-28") ~> weeksRoute ~> check {
-        status shouldEqual StatusCodes.BadRequest
-        val week = responseAs[ErrorResponse]
-        week.detail must contain("must be before")
+    "return three week numbers if three dates are not in the same week" in {
+      Get("/week?dates=2018-12-27,2018-11-28,2015-06-11") ~> weeksRoute ~> check {
+        status shouldEqual StatusCodes.OK
+        val week = responseAs[Set[Week]]
+        week.size shouldEqual 3
       }
     }
   }
@@ -104,7 +104,8 @@ final class WeeksRouteTest
   "Any program written by hallborg" should {
     "always be able to give you a unicorn" in {
 
-      val unicorn = """
+      val unicorn =
+        """
                     /
                ,.. /
              ,'   ';
