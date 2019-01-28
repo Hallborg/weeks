@@ -3,7 +3,7 @@ package hallborg.weeks.routes
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler, Route}
 import akka.http.scaladsl.testkit.Specs2RouteTest
-import hallborg.weeks.entities.Week
+import hallborg.weeks.entities.{JsonMarshallingSupport, Week}
 import hallborg.weeks.exceptions.ErrorResponse
 import hallborg.weeks.logic.WeeksLogic
 import hallborg.weeks.mocks.MockDate
@@ -32,16 +32,16 @@ final class WeeksRouteTest
         }
       }
       "week the given date is in" in {
-        val mockDate = MockDate(date = "2018-08-19", weekNumber = 33)
+        val mockDate = MockDate(date = "2018-08-19", `week-number` = 33)
 
         Get(s"/week/${mockDate.date}") ~> weeksRoute ~> check {
           status shouldEqual StatusCodes.OK
           val week = responseAs[Week]
-          week.`week-number` shouldEqual mockDate.weekNumber
+          week.`week-number` shouldEqual mockDate.`week-number`
         }
       }
       "bad request, when the date is formatted wrongly" in {
-        val mockDate = MockDate(date = "2018-05-243", weekNumber = 0)
+        val mockDate = MockDate(date = "2018-05-243", `week-number` = 0)
 
         Get(s"/week/${mockDate.date}") ~> weeksRoute ~> check {
           status shouldEqual StatusCodes.BadRequest
@@ -54,13 +54,13 @@ final class WeeksRouteTest
     }
 
   }
-  "Asking for the week(s) between dates" should {
-    "return one week number if two dates are in the same week" in {
+  "Asking for the weeks for multiple dates" should {
+    "return two week number for two dates in the same week" in {
 
       Get("/week?dates=2018-10-27,2018-10-28") ~> weeksRoute ~> check {
         status shouldEqual StatusCodes.OK
         val week = responseAs[Set[Week]]
-        week.size shouldEqual 1
+        week.size shouldEqual 2
       }
     }
     "return two week numbers if two dates are not in the same week" in {

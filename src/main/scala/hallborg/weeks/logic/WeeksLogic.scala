@@ -1,6 +1,7 @@
 package hallborg.weeks.logic
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.{TemporalField, WeekFields}
 
 import hallborg.weeks.entities.Week
@@ -32,7 +33,7 @@ class WeeksLogic {
   def getWeekFromDate(date: LocalDate): Week = calculateWeek(date)
 
   private def calculateWeek(date: LocalDate) =
-    Week(date.get(getWeeksFields))
+    Week(date.get(getWeeksFields), date)
 
   private def getWeeksFields: TemporalField =
     WeekFields.ISO.weekOfWeekBasedYear()

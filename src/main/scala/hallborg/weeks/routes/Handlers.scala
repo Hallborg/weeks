@@ -4,6 +4,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives.complete
 import akka.http.scaladsl.server.{ExceptionHandler, RejectionHandler}
+import hallborg.weeks.entities.JsonMarshallingSupport
 import hallborg.weeks.exceptions._
 
 object Handlers extends JsonMarshallingSupport {

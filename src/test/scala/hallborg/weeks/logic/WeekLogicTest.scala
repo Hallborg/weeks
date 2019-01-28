@@ -14,26 +14,28 @@ final class WeekLogicTest extends Specification {
   private def confirmCalculatedWeek(mockWeek: MockDate) = {
     val calculatedWeek = weeksLogic.getWeekFromDateString(mockWeek.date)
 
-    calculatedWeek shouldEqual Week(mockWeek.weekNumber)
+    calculatedWeek.`week-number` shouldEqual mockWeek.`week-number`
   }
 
   "A week" can {
     "have a number between 1 and 53" in {
-      Week(1) must not(throwA[IllegalArgumentException])
-      Week(53) must not(throwA[IllegalArgumentException])
+      val date = LocalDate.now()
+      def week = Week(_:Int, date)
+      week.apply(1) must not(throwA[IllegalArgumentException])
+      week.apply(53) must not(throwA[IllegalArgumentException])
 
-      Week(0) must throwA[IllegalArgumentException]
-      Week(54) must throwA[IllegalArgumentException]
+      week.apply(0) must throwA[IllegalArgumentException]
+      week.apply(54) must throwA[IllegalArgumentException]
 
     }
   }
   "A week" should {
     "end on a sunday" in {
-      val sundayDate = MockDate(date = "2018-08-19", weekNumber = 33)
+      val sundayDate = MockDate(date = "2018-08-19", `week-number` = 33)
       confirmCalculatedWeek(sundayDate)
     }
     "start on a monday" in {
-      val mondayDate = MockDate(date = "2018-08-20", weekNumber = 34)
+      val mondayDate = MockDate(date = "2018-08-20", `week-number` = 34)
       confirmCalculatedWeek(mondayDate)
     }
   }
@@ -50,12 +52,12 @@ final class WeekLogicTest extends Specification {
     "work amazing" >> {
       "from dates" in {
         val dateInWeek32 = LocalDate.of(2018, 8, 7)
-        weeksLogic.getWeekFromDate(dateInWeek32) shouldEqual Week(32)
+        weeksLogic.getWeekFromDate(dateInWeek32) shouldEqual Week(32, dateInWeek32)
       }
       "from strings" in {
-        val mockDate = MockDate(date = "2018-08-20", weekNumber = 34)
+        val mockDate = MockDate(date = "2018-08-20", `week-number` = 34)
         val week = weeksLogic.getWeekFromDateString(date = mockDate.date)
-        week.`week-number` shouldEqual mockDate.weekNumber
+        week.`week-number` shouldEqual mockDate.`week-number`
       }
     }
     "fail brutally" >> {

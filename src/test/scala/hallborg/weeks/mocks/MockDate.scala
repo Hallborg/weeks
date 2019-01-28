@@ -1,3 +1,3 @@
 package hallborg.weeks.mocks
 
-case class MockDate(date: String, weekNumber: Int)
+case class MockDate(date: String, `week-number`: Int)

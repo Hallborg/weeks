@@ -3,6 +3,7 @@ package hallborg.weeks.routes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.unmarshalling.PredefinedFromStringUnmarshallers
+import hallborg.weeks.entities.JsonMarshallingSupport
 import hallborg.weeks.logic.{Unicorn, WeeksLogic}
 
 class WeeksRoute extends JsonMarshallingSupport with PredefinedFromStringUnmarshallers {
